@@ -1,22 +1,51 @@
 package hu.petrik.lancoltlista;
 
-public class LancoltLista<T> {
+public class LancoltLista<T extends Comparable<T>> {
     private ListaElem elso;
     private ListaElem utolso;
 
 
     public void hozzaAd(T ertek) {
+        ListaElem ujElem = new ListaElem(ertek);
+        ujElem.setElozo(this.utolso);
         if (this.elso == null) {
-            ListaElem ujElem = new ListaElem(ertek);
             this.elso = ujElem;
             this.utolso = ujElem;
         } else {
-            ListaElem ujUtolso = new ListaElem(ertek);
-            ujUtolso.setElozo(this.utolso);
-            this.utolso.setKovetkezo(ujUtolso);
-            this.utolso = ujUtolso;
+            ujElem.setElozo(this.utolso);
+            this.utolso.setKovetkezo(ujElem);
         }
+        this.utolso = ujElem;
 
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder builder = new StringBuilder();
+        ListaElem jelenlegiElem = this.elso;
+        if (jelenlegiElem != null) {
+            builder.append(jelenlegiElem);
+            jelenlegiElem = jelenlegiElem.getKovetkezo();
+        }
+        while (jelenlegiElem != null) {
+            builder.append(", ").append(jelenlegiElem);
+            jelenlegiElem = jelenlegiElem.getKovetkezo();
+        }
+        return builder.toString();
+    }
+
+    public boolean contain(T keresettElem) {
+        boolean containing = false;
+        ListaElem jelenlegiElem = this.elso;
+        while (jelenlegiElem != null) {
+            if (jelenlegiElem.ertek.compareTo(keresettElem) == 0) {
+                containing = true;
+                break;
+            } else {
+                jelenlegiElem = jelenlegiElem.getKovetkezo();
+            }
+        }
+        return containing;
     }
 
     private class ListaElem {
@@ -52,6 +81,11 @@ public class LancoltLista<T> {
             } else {
                 this.kovetkezo.hozzaAd(ertek);
             }
+        }
+
+        @Override
+        public String toString() {
+            return this.ertek.toString();
         }
     }
 }
